@@ -1,2 +1,2 @@
 def includeme(config):
-    pass
+    config.include('.routes')
