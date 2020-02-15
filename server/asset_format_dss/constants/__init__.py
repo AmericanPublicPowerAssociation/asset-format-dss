@@ -1,10 +1,8 @@
 from os.path import dirname
 
-from asset_tracker import constants
-
 
 def includeme(config):
-    pass
+    config.include('.assets')
 
 
 CONSTANTS_FOLDER = dirname(__file__)
