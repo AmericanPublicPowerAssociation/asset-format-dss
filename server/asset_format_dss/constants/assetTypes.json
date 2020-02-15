@@ -23,7 +23,6 @@
   ]
 }, {
   "code": "t",
-  "name": "Transformer",
   "assetAttributes": [
     ["phaseCount", [1, 2, 3]],
     ["windingCount", "number"],
@@ -39,8 +38,6 @@
   ]
 }, {
   "code": "x",
-  "name": "Switch",
-  "subCodes": ["xf", "xb", "xc", "xi", "xs", "xr"],
   "assetAttributes": [
     ["phaseCount", [1, 2, 3]],
     ["positiveSequenceResistance", "number"],
@@ -57,27 +54,7 @@
     ["zeroSequenceCapacitanceUnit", ["nF/mi"]]
   ]
 }, {
-  "code": "xf",
-  "name": "Fuse Switch"
-}, {
-  "code": "xb",
-  "name": "Breaker Switch"
-}, {
-  "code": "xc",
-  "name": "Recloser Switch"
-}, {
-  "code": "xi",
-  "name": "Interrupter Switch"
-}, {
-  "code": "xs",
-  "name": "Sectionalizer Switch"
-}, {
-  "code": "xr",
-  "name": "Relay Switch"
-}, {
   "code": "q",
-  "name": "Power Quality",
-  "subCodes": ["qc", "qr", "qb"],
   "assetAttributes": [
     ["phaseCount", [1, 2, 3]],
     ["windingCount", "number"],
@@ -101,29 +78,12 @@
     ["powerUnit", ["kVA"]]
   ]
 }, {
-  "code": "qc",
-  "name": "Capacitor"
-}, {
   "code": "qr",
-  "name": "Regulator",
   "assetAttributes": [
     ["winding1Winding2PercentReactance", "number"]
   ]
 }, {
-  "code": "qb",
-  "name": "Booster"
-}, {
-  "code": "c",
-  "name": "Control"
-}, {
-  "code": "b",
-  "name": "Busbar"
-}, {
-  "code": "o",
-  "name": "Storage"
-}, {
   "code": "g",
-  "name": "Generator",
   "assetAttributes": [
     ["baseFrequency", "number"],
     ["baseVoltage", "number"],
@@ -136,13 +96,4 @@
     ["shortCircuit1PhasePower", "number"],
     ["shortCircuit1PhasePowerUnit", ["MVA"]]
   ]
-}, {
-  "code": "s",
-  "name": "Substation"
-}, {
-  "code": "S",
-  "name": "Station"
-}, {
-  "code": "X",
-  "name": "Other"
 }]
