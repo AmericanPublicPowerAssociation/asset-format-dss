@@ -8,6 +8,8 @@ APP_CLASSIFIERS = [
     'Programming Language :: Python',
 ]
 APP_REQUIREMENTS = [
+    # computation
+    'networkx',
 ]
 TEST_REQUIREMENTS = [
     # 'pytest>=3.7.4',
