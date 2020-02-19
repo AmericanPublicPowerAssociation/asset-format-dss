@@ -1,9 +1,8 @@
 from collections import namedtuple
 
-import sqlalchemy
-from sqlalchemy.orm.exc import NoResultFound
+from asset_tracker.models.assets import (
+    Asset, Bus, Connection, LineType, AssetTypeCode)
 
-from asset_tracker.models.assets import Asset, Bus, Connection, LineType, AssetTypeCode
 
 TRANSFORMER = AssetTypeCode.TRANSFORMER
 METER = AssetTypeCode.METER
@@ -20,14 +19,17 @@ POWERQUALITY = 'q'
 POWERQUALITY_CAPACITOR = f'{POWERQUALITY}c'
 POWERQUALITY_REGULATOR = f'{POWERQUALITY}r'
 
-to_dss_array = lambda l:  f'[ {" ".join(l)} ]'
 
+to_dss_array = lambda l:  f'[ {" ".join(l)} ]'
 build_bus = lambda bus, nodes:  f'{bus}.{".".join(nodes)}' if nodes else f'{bus}'
 to_str = lambda l: [str(e) for e in l if e]
+
+
 def to_matrix(lists):
     rows = [' '.join(map(str, entry)) for entry in lists]
     matrix = ' | '.join(rows)
     return f'[{matrix}]'
+
 
 class AssetMixin:
     @property
@@ -40,7 +42,6 @@ class AssetMixin:
 
     def attributes(self):
         return self.asset.name
-
 
 
 class Line(AssetMixin):
@@ -70,7 +71,8 @@ class Line(AssetMixin):
         if len(self.conn) > 0:
             for conn in self.conn:
                 attr = conn.wired.attributes
-                bus2 = build_bus(conn.bus.id, to_str(attr.get('busNodes') or []))
+                bus2 = build_bus(conn.bus.id, to_str(
+                    attr.get('busNodes') or []))
 
         if bus1:
             line += f' Bus1={bus1} '
@@ -219,6 +221,7 @@ class Capacitor(AssetMixin):
 
         return command
 
+
 class PowerQuality(AssetMixin):
     type = POWERQUALITY
 
@@ -232,6 +235,7 @@ class PowerQuality(AssetMixin):
         command = f'// Power Quality still not supported {self.asset.id}'
 
         return command
+
 
 class Transformer(AssetMixin):
     type = TRANSFORMER
@@ -357,7 +361,6 @@ def generate_dss_script(db, root='voltageSource', allowed_assets=ASSET):
         print(f'===== Code:  {element.type_code}')
         bus = db.query(Bus).filter(Bus.id == conn.bus_id).one()
 
-
         if element.id == root:
             asset = Circuit
         else:
@@ -368,10 +371,9 @@ def generate_dss_script(db, root='voltageSource', allowed_assets=ASSET):
         current.append(Conn(bus, element, asset, conn))
         buses[conn.asset_id] = current
 
-
     stations = []
-    substation = []
-    linecodes = []
+    # substation = []
+    # linecodes = []
     lines = []
     regulators = []
     transformers = []
@@ -381,15 +383,15 @@ def generate_dss_script(db, root='voltageSource', allowed_assets=ASSET):
     lcs = []
 
     ELEMENTS = (
-            {'title': 'Station', 'assets': stations},
-            {'title': 'Generators', 'assets': generators},
-            {'title': 'Transformers', 'assets': transformers},
-            {'title': 'Line Codes', 'assets': lcs},
-            {'title': 'Lines', 'assets': lines},
-            {'title': 'Loads', 'assets': loads},
-            # {'title': 'Storage', 'assets': storage},
-            {'title': 'Capacitor', 'assets': capacitors},
-            {'title': 'Regulator', 'assets': regulators},
+        {'title': 'Station', 'assets': stations},
+        {'title': 'Generators', 'assets': generators},
+        {'title': 'Transformers', 'assets': transformers},
+        {'title': 'Line Codes', 'assets': lcs},
+        {'title': 'Lines', 'assets': lines},
+        {'title': 'Loads', 'assets': loads},
+        # {'title': 'Storage', 'assets': storage},
+        {'title': 'Capacitor', 'assets': capacitors},
+        {'title': 'Regulator', 'assets': regulators},
     )
 
     circuit = []
@@ -432,7 +434,9 @@ def generate_dss_script(db, root='voltageSource', allowed_assets=ASSET):
             generators.append(asset)
 
     if len(stations) == 0:
-        circuit.append(comment('WARNING: No voltage source provided or the source id is invalid\n'))
+        circuit.append(comment(
+            'WARNING: No voltage source provided or the source id is invalid\n'
+        ))
 
     circuit.append(circuit_head)
     for group in ELEMENTS:
@@ -443,4 +447,3 @@ def generate_dss_script(db, root='voltageSource', allowed_assets=ASSET):
     circuit.append(circuit_tail)
 
     return circuit
-

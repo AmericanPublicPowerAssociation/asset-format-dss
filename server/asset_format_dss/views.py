@@ -1,8 +1,8 @@
 import io
-
-from asset_format_dss.routines.opendss import generate_dss_script
 from pyramid.view import view_config
 from pyramid.response import Response
+
+from .routines.opendss import generate_dss_script
 
 
 @view_config(
@@ -22,4 +22,4 @@ def see_assets_dss(request):
         body=f.getvalue(),
         status=200,
         content_type='text/plain',
-        content_disposition='attachment')
+        content_disposition='attachment; filename="assets.dss"')
