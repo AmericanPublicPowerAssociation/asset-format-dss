@@ -5,5 +5,5 @@ def includeme(config):
     config.include('.asset')
 
 
-PACKAGE_FOLDER = dirname(__file__)
+PACKAGE_FOLDER = dirname(dirname(__file__))
 DATASETS_FOLDER = join(PACKAGE_FOLDER, 'datasets')
