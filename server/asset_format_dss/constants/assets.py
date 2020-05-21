@@ -1,15 +1,14 @@
+from invisibleroads_macros_configuration import load_json
 from os.path import join
 
 from invisibleroads_macros_configuration import load_json
-# from asset_tracker.routines.asset import absorb_asset_type_by_code
+from asset_tracker.routines.asset import absorb_asset_type_by_code
 
 from . import CONSTANTS_FOLDER
 
 
 def includeme(config):
-    # absorb_asset_type_by_code(ASSET_TYPES)
-    pass
+    absorb_asset_type_by_code(ASSET_TYPE_BY_CODE)
 
 
-
-ASSET_TYPES = load_json(join(CONSTANTS_FOLDER, 'assetTypes.json'))
+ASSET_TYPE_BY_CODE = load_json(join(CONSTANTS_FOLDER, 'assetTypeByCode.json'))
