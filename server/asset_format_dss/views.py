@@ -1,8 +1,7 @@
-import io
-
 from asset_tracker.models import Asset
-from pyramid.view import view_config
+from io import StringIO
 from pyramid.response import Response
+from pyramid.view import view_config
 
 from .routines.opendss import generate_dss_script
 
@@ -20,7 +19,7 @@ def see_assets_dss(request):
     else:
         script = generate_dss_script(request.db)
 
-    f = io.StringIO()
+    f = StringIO()
 
     for line in script:
         f.write(line)

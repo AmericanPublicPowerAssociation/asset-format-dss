@@ -2,7 +2,7 @@ from os.path import dirname, join
 
 
 def includeme(config):
-    config.include('.assets')
+    config.include('.asset')
 
 
 PACKAGE_FOLDER = dirname(__file__)
