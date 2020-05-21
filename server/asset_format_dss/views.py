@@ -1,4 +1,6 @@
 import io
+
+from asset_tracker.models import Asset
 from pyramid.view import view_config
 from pyramid.response import Response
 
@@ -9,9 +11,14 @@ from .routines.opendss import generate_dss_script
     route_name='assets.dss',
     request_method='GET')
 def see_assets_dss(request):
+    db = request.db
     vsource = request.GET.get('source')
 
-    script = generate_dss_script(request.db, root=vsource)
+    element = db.query(Asset).filter(Asset.name == vsource)
+    if element.count():
+        script = generate_dss_script(request.db, root=element.one().id)
+    else:
+        script = generate_dss_script(request.db)
 
     f = io.StringIO()
 

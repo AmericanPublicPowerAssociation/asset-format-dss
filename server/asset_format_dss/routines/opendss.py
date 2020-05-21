@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from asset_tracker.models.assets import (
+from asset_tracker.models.asset import (
     Asset, Bus, Connection, LineType, AssetTypeCode)
 
 
