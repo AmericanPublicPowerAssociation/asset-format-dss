@@ -357,7 +357,10 @@ def generate_dss_script(db, root='voltageSource', allowed_assets=ASSET):
         else:
             current = buses[conn.asset_id]
 
-        element = db.query(Asset).filter(Asset.id == conn.asset_id).one()
+        element = db.query(Asset).filter(Asset.is_deleted == False).filter(Asset.id == conn.asset_id)
+        if element.count() == 0:
+            continue
+        element = element.one()
         print(f'===== Code:  {element.type_code}')
         bus = db.query(Bus).filter(Bus.id == conn.bus_id).one()
 
