@@ -11,9 +11,9 @@ from .routines.opendss import generate_dss_script
     request_method='GET')
 def see_assets_dss(request):
     db = request.db
-    vsource = request.GET.get('source')
+    vsourceId = request.GET.get('sourceId')
 
-    element = db.query(Asset).filter(Asset.name == vsource)
+    element = db.query(Asset).filter(Asset.id == vsourceId)
     if element.count():
         script = generate_dss_script(request.db, root=element.one().id)
     else:
