@@ -23,7 +23,7 @@ POWERQUALITY_REGULATOR = f'{POWERQUALITY}r'
 to_dss_array = lambda l:  f'[ {" ".join(l)} ]'
 build_bus = lambda bus, nodes:  f'{bus}.{".".join(nodes)}' if nodes else f'{bus}'
 to_str = lambda l: [str(e) for e in l if e]
-
+comment = lambda text: f'// {text}'
 
 def to_matrix(lists):
     rows = [' '.join(map(str, entry)) for entry in lists]
@@ -344,36 +344,33 @@ ASSET = (Line, Switch, Meter, Regulator, Capacitor, Transformer, Generator, Powe
 Conn = namedtuple("Conn", ["bus", "element", 'asset', 'wired'])
 
 
-def comment(text):
-    return f'// {text}'
-
-
 def generate_dss_script(db, root='voltageSource', allowed_assets=ASSET):
     buses = {}
-    for conn in db.query(Connection):
-        asset = None
+    normalized_assets, normalized_conn = normalize_assets_and_connections(db)
+
+    for conn in normalized_conn:
         if conn.asset_id not in buses.keys():
             current = []
         else:
             current = buses[conn.asset_id]
 
-        element = db.query(Asset).filter(Asset.is_deleted == False).filter(Asset.id == conn.asset_id)
-        if element.count() == 0:
+        element = normalized_assets.get(conn.asset_id)
+        if not element:
             continue
-        element = element.one()
-        print(f'===== Code:  {element.type_code}')
+
         bus = db.query(Bus).filter(Bus.id == conn.bus_id).one()
+        asset_type = get_asset_type(element, allowed_assets, root)
 
-        if element.id == root:
-            asset = Circuit
-        else:
-            for AssetClass in allowed_assets:
-                if element.type_code == AssetClass.type:
-                    asset = AssetClass
-
-        current.append(Conn(bus, element, asset, conn))
+        current.append(Conn(bus, element, asset_type, conn))
         buses[conn.asset_id] = current
 
+    assets_by_type = group_assets_by_type(db, buses, root)
+    stations = assets_by_type[0]['assets']
+    circuit = build_circuit(assets_by_type, get_circuit_head(), get_circuit_tail(), warning=len(stations) == 0)
+    return circuit
+
+
+def group_assets_by_type(db, buses, root):
     stations = []
     # substation = []
     # linecodes = []
@@ -397,24 +394,10 @@ def generate_dss_script(db, root='voltageSource', allowed_assets=ASSET):
         {'title': 'Regulator', 'assets': regulators},
     )
 
-    circuit = []
-    circuit_head = 'clear\n'
-    circuit_head += 'New Circuit.AssetTracker\n'
-
-    circuit_tail = 'Set Voltagebases=[115, 4.16, .48]\n'
-    circuit_tail += 'calcv\n'
-    circuit_tail += 'solve\n'
-    circuit_tail += 'Show Voltages LN Nodes\n'
-    circuit_tail += 'Show Currents Elem\n'
-    circuit_tail += 'Show Powers kVA Elem\n'
-    circuit_tail += 'Show Losses\n'
-    circuit_tail += 'Show Taps\n'
-
     for conn in db.query(LineType):
         lcs.append(LineCode(conn))
 
     for bus_id, connections in buses.items():
-        print(connections)
         conns = connections[1:]
         conn = connections[0]
         asset = conn.asset(conn.element, conn.bus, conns, conn.wired)
@@ -436,17 +419,106 @@ def generate_dss_script(db, root='voltageSource', allowed_assets=ASSET):
         if conn.asset == Generator:
             generators.append(asset)
 
-    if len(stations) == 0:
-        circuit.append(comment(
-            'WARNING: No voltage source provided or the source id is invalid\n'
-        ))
+    return ELEMENTS
 
-    circuit.append(circuit_head)
-    for group in ELEMENTS:
+
+def get_asset_type(asset, allowed_assets=list(), root=None):
+    asset_type = None
+    if asset.id == root:
+        asset_type = Circuit
+    else:
+        for AssetClass in allowed_assets:
+            if asset.type_code == AssetClass.type:
+                asset_type = AssetClass
+
+    return asset_type
+
+
+def get_circuit_head():
+    circuit_head = 'clear\n'
+    circuit_head += 'New Circuit.AssetTracker\n'
+
+    return circuit_head
+
+
+def get_circuit_tail():
+    circuit_tail = 'Set Voltagebases=[115, 4.16, .48]\n'
+    circuit_tail += 'calcv\n'
+    circuit_tail += 'solve\n'
+    circuit_tail += 'Show Voltages LN Nodes\n'
+    circuit_tail += 'Show Currents Elem\n'
+    circuit_tail += 'Show Powers kVA Elem\n'
+    circuit_tail += 'Show Losses\n'
+    circuit_tail += 'Show Taps\n'
+
+    return circuit_tail
+
+
+def build_circuit(assets, head='', tail='', warning=False):
+    circuit = []
+    if warning:
+        circuit.append(
+            comment('WARNING: No voltage source provided or the source id is invalid\n')
+        )
+
+    circuit.append(head)
+    for group in assets:
         circuit.append(f'// ==== {group["title"]}\n')
 
         for asset in group['assets']:
             circuit.append(str(asset) + '\n')
-    circuit.append(circuit_tail)
+    circuit.append(tail)
 
     return circuit
+
+
+def clone_asset(asset, index=None):
+    new_asset = Asset(type_code=asset.type_code, name=asset.name)
+    if index is not None:
+        new_asset.name = f'{asset.id}_{index}'
+        new_asset.id = f'{asset.id}_{index}'
+
+    new_asset.attributes = asset.attributes
+
+    return new_asset
+
+
+def clone_connection(connection, asset_id=None, vertex=None):
+    new_connection = Connection(bus_id=connection.bus_id, asset_id=connection.asset_id,
+                                asset_vertex_index=connection.asset_vertex_index)
+    if asset_id:
+        new_connection.asset_id = asset_id
+    if vertex:
+        new_connection.asset_vertex_index = vertex
+
+    new_connection.attributes = connection.attributes
+
+    return new_connection
+
+
+def normalize_assets_and_connections(db):
+    flat_connections = []
+    flat_assets = {}
+
+    for asset in db.query(Asset).filter(Asset.is_deleted == False):
+        connections = db.query(Connection).filter(Connection.asset_id == asset.id)
+        poll_connections = [connection for connection in connections]
+
+        if asset.type_code == AssetTypeCode.LINE and len(poll_connections) > 2:
+            for i in range(0, len(poll_connections) - 1):
+                if not flat_assets.get(f'{asset.id}_{i}'):
+                    flat_assets[f'{asset.id}_{i}'] = clone_asset(asset, i)
+
+                temp_connection_0 = clone_connection(poll_connections[i], asset_id=f'{asset.id}_{i}', vertex=0)
+                temp_connection_1 = clone_connection(poll_connections[i+1], asset_id=f'{asset.id}_{i}', vertex=1)
+
+                flat_connections.append(temp_connection_0)
+                flat_connections.append(temp_connection_1)
+        else:
+            if not flat_assets.get(asset.id):
+                flat_assets[asset.id] = asset
+
+            for conn in poll_connections:
+                flat_connections.append(conn)
+
+    return flat_assets, flat_connections
