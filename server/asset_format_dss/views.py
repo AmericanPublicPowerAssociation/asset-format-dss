@@ -11,9 +11,9 @@ from .routines.opendss import generate_dss_script, normalize_assets_and_connecti
     request_method='GET')
 def see_assets_dss(request):
     db = request.db
-    vsource = request.GET.get('source')
+    vsourceId = request.GET.get('sourceId')
 
-    element = db.query(Asset).filter(Asset.name == vsource)
+    element = db.query(Asset).filter(Asset.id == vsourceId)
 
     connections = db.query(Connection).all()
     assets = db.query(Asset).filter(Asset.is_deleted == False)
