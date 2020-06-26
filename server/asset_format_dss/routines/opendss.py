@@ -8,16 +8,16 @@ TRANSFORMER = AssetTypeCode.TRANSFORMER
 METER = AssetTypeCode.METER
 LINE = AssetTypeCode.LINE
 LINECODE = 'linecode'
-GENERATOR = 'g'
-STATION = 'S'
+GENERATOR = AssetTypeCode.GENERATOR
+STATION = AssetTypeCode.STATION
 SUBSTATION = AssetTypeCode.SUBSTATION
 LOAD = 'load'
 BUS = 'bus'
-STORAGE = 'o'
-SWITCH = 'x'
-POWERQUALITY = 'q'
-POWERQUALITY_CAPACITOR = f'{POWERQUALITY}c'
-POWERQUALITY_REGULATOR = f'{POWERQUALITY}r'
+STORAGE = AssetTypeCode.STORAGE
+SWITCH = AssetTypeCode.SWITCH
+POWERQUALITY = AssetTypeCode.POWERQUALITY
+POWERQUALITY_CAPACITOR = AssetTypeCode.CAPACITOR
+POWERQUALITY_REGULATOR = AssetTypeCode.REGULATOR
 
 
 to_dss_array = lambda l:  f'[ {" ".join(l)} ]'
@@ -109,12 +109,12 @@ class Switch(AssetMixin):
         line += f' r1={r1} r0={r0} x1={x1} x0={x0} c1={c1} c0={c0}'
 
         connection_attributes = self.wired['attributes']
-        bus1 = build_bus(self.bus, to_str(connection_attributes.get('busNodes')))
+        bus1 = build_bus(self.bus, to_str(connection_attributes.get('busNodes', [])))
         bus2 = None
         if len(self.conn) > 0:
             for conn in self.conn:
                 connection_attributes = conn.wired['attributes']
-                bus2 = build_bus(conn.bus, to_str(connection_attributes.get('busNodes')))
+                bus2 = build_bus(conn.bus, to_str(connection_attributes.get('busNodes', [])))
 
         if bus1:
             line += f' Bus1={bus1} '
@@ -461,6 +461,9 @@ def get_asset_type(asset, allowed_assets=list(), root=None):
         for AssetClass in allowed_assets:
             if asset['type_code'] == AssetClass.type:
                 asset_type = AssetClass
+
+    if not asset_type:
+        print(asset['type_code'])
 
     return asset_type
 
