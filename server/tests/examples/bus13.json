@@ -1,0 +1,1005 @@
+{
+  "assets": {
+    "generators": [
+      {
+        "id": "voltageSource",
+        "type_code": "g",
+        "attributes": {
+          "baseFrequency": 60,
+          "baseVoltage": 115,
+          "baseVoltageUnit": "kV",
+          "perUnitVoltage": 1.00,
+          "phaseCount": 3,
+          "phaseAngle": 30,
+          "shortCircuit3PhasePower": 10000.0,
+          "shortCircuit3PhasePowerUnit": "MVA",
+          "shortCircuit1PhasePower": 10500.0,
+          "shortCircuit1PhasePowerUnit": "MVA"
+        }
+      }
+    ],
+    "substations": [
+      {
+        "id": "substationTransformer",
+        "type_code": "t",
+        "attributes": {
+          "phaseCount": 3,
+          "windingCount": 2,
+          "winding1Winding2PercentReactance": 0.008
+        }
+      }
+    ],
+    "regulators": [
+      {
+        "id": "voltageRegulator1",
+        "type_code": "qr",
+        "attributes": {
+          "phaseCount": 1,
+          "windingCount": 2,
+          "percentLoadLoss": 0.01,
+          "regulatedVoltage": 122,
+          "regulatedVoltageUnit": "V",
+          "bandwidthVoltage": 2,
+          "bandwidthVoltageUnit": "V",
+          "potentialTransformerRatio": 20,
+          "currentTransformerRating": 700,
+          "currentTransformerRatingUnit": "A",
+          "rSettingVoltage": 3,
+          "rSettingVoltageUnit": "V",
+          "xSettingVoltage": 9,
+          "xSettingVoltageUnit": "V"
+        }
+      },
+      {
+        "id": "voltageRegulator2",
+        "type_code": "qr",
+        "attributes": {
+          "phaseCount": 1,
+          "windingCount": 2,
+          "winding1Winding2PercentReactance": 0.01,
+          "percentLoadLoss": 0.01,
+          "regulatedVoltage": 122,
+          "regulatedVoltageUnit": "V",
+          "bandwidthVoltage": 2,
+          "bandwidthVoltageUnit": "V",
+          "potentialTransformerRatio": 20,
+          "currentTransformerRating": 700,
+          "currentTransformerRatingUnit": "A",
+          "rSettingVoltage": 3,
+          "rSettingVoltageUnit": "V",
+          "xSettingVoltage": 9,
+          "xSettingVoltageUnit": "V"
+        }
+      },
+      {
+        "id": "voltageRegulator3",
+        "type_code": "qr",
+        "attributes": {
+          "phaseCount": 1,
+          "windingCount": 2,
+          "winding1Winding2PercentReactance": 0.01,
+          "percentLoadLoss": 0.01,
+          "regulatedVoltage": 122,
+          "regulatedVoltageUnit": "V",
+          "bandwidthVoltage": 2,
+          "bandwidthVoltageUnit": "V",
+          "potentialTransformerRatio": 20,
+          "currentTransformerRating": 700,
+          "currentTransformerRatingUnit": "A",
+          "rSettingVoltage": 3,
+          "rSettingVoltageUnit": "V",
+          "xSettingVoltage": 9,
+          "xSettingVoltageUnit": "V"
+        }
+      }
+    ],
+    "transformers": [
+      {
+        "id": "XFM1",
+        "type_code": "t",
+        "attributes": {
+          "phaseCount": 3,
+          "windingCount": 2,
+          "winding1Winding3PercentReactance": 1.0,
+          "winding2Winding3PercentReactance": 1.0
+        }
+      }
+    ],
+    "loads": [
+      {
+        "id": "load_671",
+        "type_code": "m",
+        "attributes": {
+          "phaseCount": 3,
+          "loadModel": 1
+        }
+      }, {
+        "id": "634_1",
+        "type_code": "m",
+        "attributes": {
+          "phaseCount": 1,
+          "loadModel": 1
+        }
+      }, {
+        "id": "634_2",
+        "type_code": "m",
+        "attributes": {
+          "phaseCount": 1,
+          "loadModel": 1
+        }
+      }, {
+        "id":"634_3",
+        "type_code":"m",
+        "attributes":{
+          "phaseCount": 1,
+          "loadModel": 1
+        }
+      }, {
+        "id":"645_2",
+        "type_code":"m",
+        "attributes":{
+          "phaseCount": 1,
+          "loadModel": 1
+        }
+      }, {
+        "id":"646_2",
+        "type_code":"m",
+        "attributes":{
+          "phaseCount": 1,
+          "loadModel": 1
+        }
+      }, {
+        "id":"652_1",
+        "type_code":"m",
+        "attributes":{
+          "phaseCount": 1,
+          "loadModel": 2
+        }
+      }, {
+        "id": "675_1",
+        "type_code":"m",
+        "attributes":{
+          "phaseCount": 1,
+          "loadModel": 1
+        }
+      }, {
+        "id":"675_2",
+        "type_code":"m",
+        "attributes":{
+          "phaseCount": 1,
+          "loadModel": 1
+        }
+      }, {
+        "id":"675_3",
+        "type_code":"m",
+        "attributes":{
+          "phaseCount": 1,
+          "loadModel": 1
+        }
+      }, {
+        "id":"692_3",
+        "type_code":"m",
+        "attributes":{
+          "phaseCount": 1,
+          "loadModel": 5
+        }
+      }, {
+        "id":"611_3",
+        "type_code":"m",
+        "attributes":{
+          "phaseCount": 1,
+          "loadModel": 5
+        }
+      }, {
+        "id":"670_1",
+        "type_code":"m",
+        "attributes":{
+          "phaseCount": 1,
+          "loadModel": 1
+        }
+      },{
+        "id":"670_2",
+        "type_code":"m",
+        "attributes":{
+          "phaseCount": 1,
+          "loadModel": 1
+        }
+      }, {
+        "id":"670_3",
+        "type_code":"m",
+        "attributes":{
+          "phaseCount": 1,
+          "loadModel": 1
+        }
+      }
+    ],
+    "capacitors": [
+      {
+        "id":"cap1",
+        "type_code":"qc",
+        "attributes":{
+          "phaseCount": 3
+        }
+      },{
+        "id":"cap2",
+        "type_code":"qc",
+        "attributes":{
+          "phaseCount": 1
+        }
+      }
+    ],
+    "lines": [
+      {
+        "id":"632-645",
+        "type_code":"l",
+        "attributes":{
+          "phaseCount": 2,
+          "lineType": "mtx603",
+          "lineLength": 0.09,
+          "lengthUnit": "mi"
+        }
+      }, {
+        "id":"632-633",
+        "type_code":"l",
+        "attributes":{
+          "phaseCount": 3,
+          "lineType": "mtx602",
+          "lineLength": 0.09,
+          "lengthUnit": "mi"
+        }
+      }, {
+        "id": "645-646",
+        "type_code":"l",
+        "attributes":{
+          "phaseCount": 2,
+          "lineType": "mtx603",
+          "lineLength": 0.06,
+          "lengthUnit": "mi"
+        }
+      }, {
+        "id":"rg60-632",
+        "type_code":"l",
+        "attributes":{
+            "phaseCount": 3,
+            "lineType": "mtx601",
+            "lineLength": 0.38,
+            "lengthUnit": "mi"
+        }
+      }, {
+        "id":"684-652",
+        "type_code":"l",
+        "attributes":{
+          "phaseCount": 1,
+          "lineType": "mtx607",
+          "lineLength": 0.15,
+          "lengthUnit": "mi"
+        }
+      }, {
+        "id":"632-671",
+        "type_code":"l",
+        "attributes":{
+          "phaseCount": 3,
+          "lineType": "mtx601",
+          "lineLength": 0.38,
+          "lengthUnit": "mi"
+        }
+      }, {
+        "id":"671-684",
+        "type_code":"l",
+        "attributes":{
+          "phaseCount": 2,
+          "lineType": "mtx604",
+          "lineLength": 0.06,
+          "lengthUnit": "mi"
+        }
+      }, {
+        "id":"671-680",
+        "type_code":"l",
+        "attributes":{
+          "phaseCount": 3,
+          "lineType": "mtx601",
+          "lineLength": 0.19,
+          "lengthUnit": "mi"
+        }
+      }, {
+        "id": "684-611",
+        "type_code":"l",
+        "attributes":{
+          "phaseCount": 1,
+          "lineType": "mtx605",
+          "lineLength": 0.06,
+          "lengthUnit": "mi"
+        }
+      }, {
+        "id": "692-675",
+        "type_code":"l",
+        "attributes":{
+          "phaseCount": 3,
+          "lineType": "mtx606",
+          "lineLength": 0.09,
+          "lengthUnit": "mi"
+        }
+      }
+    ],
+    "switched": [{
+      "id": "671-692",
+      "type_code":"x",
+      "attributes":{
+          "phaseCount": 3,
+          "positiveSequenceResistance": 1e-4,
+          "positiveSequenceResistanceUnit": "ohms/mi",
+          "zeroSequenceResistance": 1e-4,
+          "zeroSequenceResistanceUnit": "ohms/mi",
+          "positiveSequenceReactance": 0,
+          "positiveSequenceReactanceUnit": "ohms/mi",
+          "zeroSequenceReactance": 0,
+          "zeroSequenceReactanceUnit": "ohms/mi",
+          "positiveSequenceCapacitance": 0,
+          "positiveSequenceCapacitanceUnit": "nF/mi",
+          "zeroSequenceCapacitance": 0,
+          "zeroSequenceCapacitanceUnit": "nF/mi"
+      }
+    }
+  ]
+  },
+  "buses": [
+    {
+      "id": "sourceBus",
+      "type_code": "b"
+    },
+    {
+      "id": "650",
+      "type_code": "b"
+    },
+    {
+      "id": "RG60",
+      "type_code": "b"
+    },
+    {
+      "id": "633",
+      "type_code": "b"
+    },
+    {
+      "id": "634",
+      "type_code": "b"
+    },
+    {
+      "id": "645",
+      "type_code": "b"
+    },
+    {
+      "id": "646",
+      "type_code": "b"
+    },
+    {
+      "id": "652",
+      "type_code": "b"
+    },
+    {
+      "id": "670",
+      "type_code": "b"
+    },
+    {
+      "id": "671",
+      "type_code": "b"
+    },
+    {
+      "id": "675",
+      "type_code": "b"
+    },
+    {
+      "id": "611",
+      "type_code": "b"
+    },
+    {
+      "id": "680",
+      "type_code": "b"
+    },
+    {
+      "id": "684",
+      "type_code": "b"
+    },
+    {
+      "id": "692",
+      "type_code": "b"
+    },
+    {
+      "id": "632",
+      "type_code": "b"
+    }
+  ],
+  "connections": [
+    {
+      "asset_id": "voltageSource",
+      "bus_id": "sourceBus",
+      "attributes": {}
+    },
+    {
+      "asset_id": "substationTransformer",
+      "bus_id": "sourceBus",
+      "attributes": {
+        "connectionType": "delta",
+        "baseVoltage": 115,
+        "baseVoltageUnit": "kV",
+        "power": 5000,
+        "powerUnit": "kVA",
+        "powerPercentResistance": 0.0005
+      }
+    },
+    {
+      "asset_id": "substationTransformer",
+      "bus_id": "650",
+      "attributes": {
+        "connectionType": "wye",
+        "baseVoltage": 4.16,
+        "baseVoltageUnit": "kV",
+        "power": 5000,
+        "powerUnit": "kVA",
+        "powerPercentResistance": 0.0005
+      }
+    },
+    {
+      "asset_id": "voltageRegulator1",
+      "bus_id": "650",
+      "attributes": {
+        "busNodes": [1],
+        "baseVoltage": 2.4,
+        "baseVoltageUnit": "kV",
+        "power": 1666,
+        "powerUnit": "kVA"
+      }
+    },
+    {
+      "asset_id": "voltageRegulator1",
+      "bus_id": "RG60",
+      "attributes": {
+        "busNodes": [1],
+        "baseVoltage": 2.4,
+        "baseVoltageUnit": "kV",
+        "power": 1666,
+        "powerUnit": "kVA"
+      }
+    },
+    {
+      "asset_id": "voltageRegulator2",
+      "bus_id": "650",
+      "attributes": {
+        "busNodes": [2],
+        "baseVoltage": 2.4,
+        "baseVoltageUnit": "kV",
+        "power": 1666,
+        "powerUnit": "kVA"
+      }
+    },
+    {
+      "asset_id": "voltageRegulator2",
+      "bus_id": "RG60",
+      "attributes": {
+        "busNodes": [2],
+        "baseVoltage": 2.4,
+        "baseVoltageUnit": "kV",
+        "power": 1666,
+        "powerUnit": "kVA"
+      }
+    },
+    {
+      "asset_id": "voltageRegulator3",
+      "bus_id": "650",
+      "attributes": {
+        "busNodes": [3],
+        "baseVoltage": 2.4,
+        "baseVoltageUnit": "kV",
+        "power": 1666,
+        "powerUnit": "kVA"
+      }
+    },
+    {
+      "asset_id": "voltageRegulator3",
+      "bus_id": "RG60",
+      "attributes": {
+        "busNodes": [3],
+        "baseVoltage": 2.4,
+        "baseVoltageUnit": "kV",
+        "power": 1666,
+        "powerUnit": "kVA"
+      }
+    },
+    {
+      "asset_id": "XFM1",
+      "bus_id": "633",
+      "attributes": {
+        "connectionType": "wye",
+        "baseVoltage": 4.16,
+        "baseVoltageUnit": "kV",
+        "power": 500,
+        "powerUnit": "kVA",
+        "powerPercentResistance": 0.55,
+        "winding1Winding3PercentReactance": 1
+      }
+    },
+    {
+      "asset_id": "XFM1",
+      "bus_id": "634",
+      "attributes": {
+        "connectionType": "wye",
+        "baseVoltage": 0.48,
+        "baseVoltageUnit": "kV",
+        "power": 500,
+        "powerUnit": "kVA",
+        "powerPercentResistance": 0.55,
+        "winding2Winding3PercentReactance": 1
+      }
+    },
+    {
+      "asset_id": "load_671",
+      "bus_id": "671",
+      "attributes": {
+        "connectionType": "delta",
+        "busNodes": [1, 2, 3],
+        "baseVoltage": 4.16,
+        "baseVoltageUnit": "kV",
+        "activePower": 1155,
+        "activePowerUnit": "kW",
+        "reactivePower": 660,
+        "reactivePowerUnit": "kVAR"
+      }
+    }, {
+      "asset_id": "634_1",
+      "bus_id": "634",
+      "attributes": {
+        "connectionType": "wye",
+        "busNodes": [1],
+        "baseVoltage": 0.277,
+        "baseVoltageUnit": "kV",
+        "activePower": 160,
+        "activePowerUnit": "kW",
+        "reactivePower": 110,
+        "reactivePowerUnit": "kVAR"
+      }
+    },
+    {
+      "asset_id": "634_2",
+      "bus_id": "634",
+      "attributes": {
+        "connectionType": "wye",
+        "busNodes": [
+          2
+        ],
+        "baseVoltage": 0.277,
+        "baseVoltageUnit": "kV",
+        "activePower": 120,
+        "activePowerUnit": "kW",
+        "reactivePower": 90,
+        "reactivePowerUnit": "kVAR"
+      }
+    }, {
+      "asset_id": "634_3",
+      "bus_id": "634",
+      "attributes": {
+        "connectionType": "wye",
+        "busNodes": [3],
+        "baseVoltage": 0.277,
+        "baseVoltageUnit": "kV",
+        "activePower": 120,
+        "activePowerUnit": "kW",
+        "reactivePower": 90,
+        "reactivePowerUnit": "kVAR"
+      }
+    }, {
+      "asset_id": "645_2",
+      "bus_id": "645",
+      "attributes":{
+          "connectionType": "wye",
+          "busNodes": [2],
+          "baseVoltage": 2.4,
+          "baseVoltageUnit": "kV",
+          "activePower": 170,
+          "activePowerUnit": "kW",
+          "reactivePower": 125,
+          "reactivePowerUnit": "kVAR"
+      }
+    }, {
+      "asset_id": "646_2",
+      "bus_id": "646",
+      "attributes":{
+          "connectionType": "delta",
+          "busNodes": [2, 3],
+          "baseVoltage": 4.16,
+          "baseVoltageUnit": "kV",
+          "activePower": 230,
+          "activePowerUnit": "kW",
+          "reactivePower": 132,
+          "reactivePowerUnit": "kVAR"
+      }
+    }, {
+      "asset_id": "load_652_1",
+      "bus_id": "652",
+      "attributes":{
+          "connectionType": "wye",
+          "busNodes": [1],
+          "baseVoltage": 2.4,
+          "baseVoltageUnit": "kV",
+          "activePower": 128,
+          "activePowerUnit": "kW",
+          "reactivePower": 86,
+          "reactivePowerUnit": "kVAR"
+      }
+    },{
+      "asset_id": "675_1",
+      "bus_id": "675",
+      "attributes":{
+          "connectionType": "wye",
+          "busNodes": [1],
+          "baseVoltage": 2.4,
+          "baseVoltageUnit": "kV",
+          "activePower": 485,
+          "activePowerUnit": "kW",
+          "reactivePower": 190,
+          "reactivePowerUnit": "kVAR"
+      }
+    }, {
+      "asset_id": "675_2",
+      "bus_id": "675",
+      "attributes":{
+          "connectionType": "wye",
+          "busNodes": [2],
+          "baseVoltage": 2.4,
+          "baseVoltageUnit": "kV",
+          "activePower": 68,
+          "activePowerUnit": "kW",
+          "reactivePower": 60,
+          "reactivePowerUnit": "kVAR"
+      }
+    }, {
+      "asset_id": "675_3",
+      "bus_id": "675",
+      "attributes":{
+          "connectionType": "wye",
+          "busNodes": [3],
+          "baseVoltage": 2.4,
+          "baseVoltageUnit": "kV",
+          "activePower": 290,
+          "activePowerUnit": "kW",
+          "reactivePower": 212,
+          "reactivePowerUnit": "kVAR"
+      }
+    }, {
+      "asset_id": "692_3",
+      "bus_id": "692",
+      "attributes":{
+          "connectionType": "delta",
+          "busNodes": [3, 1],
+          "baseVoltage": 4.16,
+          "baseVoltageUnit": "kV",
+          "activePower": 170,
+          "activePowerUnit": "kW",
+          "reactivePower": 151,
+          "reactivePowerUnit": "kVAR"
+      }
+    }, {
+      "asset_id": "611_3",
+      "bus_id": "611",
+      "attributes":{
+          "connectionType": "wye",
+          "busNodes": [3],
+          "baseVoltage": 2.4,
+          "baseVoltageUnit": "kV",
+          "activePower": 170,
+          "activePowerUnit": "kW",
+          "reactivePower": 80,
+          "reactivePowerUnit": "kVAR"
+      }
+    }, {
+      "asset_id": "670_1",
+      "bus_id": "670",
+      "attributes":{
+          "connectionType": "wye",
+          "busNodes": [1],
+          "baseVoltage": 2.4,
+          "baseVoltageUnit": "kV",
+          "activePower": 17,
+          "activePowerUnit": "kW",
+          "reactivePower": 10,
+          "reactivePowerUnit": "kVAR"
+      }
+    }, {
+      "asset_id": "670_2",
+      "bus_id": "670",
+      "attributes":{
+          "connectionType": "wye",
+          "busNodes": [2],
+          "baseVoltage": 2.4,
+          "baseVoltageUnit": "kV",
+          "activePower": 66,
+          "activePowerUnit": "kW",
+          "reactivePower": 38,
+          "reactivePowerUnit": "kVAR"
+      }
+    }, {
+      "asset_id": "670_3",
+      "bus_id": "670",
+      "attributes":{
+          "connectionType": "wye",
+          "busNodes": [3],
+          "baseVoltage": 2.4,
+          "baseVoltageUnit": "kV",
+          "activePower": 117,
+          "activePowerUnit": "kW",
+          "reactivePower": 68,
+          "reactivePowerUnit": "kVAR"
+      }
+    }, {
+      "asset_id": "cap1",
+      "bus_id": "675",
+      "attributes":{
+        "busNodes": [1, 2, 3],
+        "baseVoltage": 4.16,
+        "baseVoltageUnit": "kV",
+        "reactivePower": 600,
+        "reactivePowerUnit": "kVAr",
+        "connectionType": "wye"
+      }
+    },
+    {
+      "asset_id": "cap2",
+      "bus_id": "611",
+      "attributes":{
+          "busNodes": [3],
+          "baseVoltage": 2.4,
+          "baseVoltageUnit": "kV",
+          "reactivePower": 100,
+          "reactivePowerUnit": "kVAr"
+      }
+    }, {
+      "asset_id": "632-645",
+      "bus_id": "632",
+      "attributes":{
+          "busNodes": [2, 3]
+      }
+    }, {
+      "asset_id": "632-645",
+      "bus_id": "645",
+      "attributes":{
+          "busNodes": [2, 3]
+      }
+    }, {
+      "asset_id": "632-633",
+      "bus_id": "632",
+      "attributes":{
+          "busNodes": [1, 2, 3]
+      }
+    }, {
+      "asset_id": "632-633",
+      "bus_id": "633",
+      "attributes":{
+          "busNodes": [1, 2, 3]
+      }
+    }, {
+      "asset_id": "645-646",
+      "bus_id": "645",
+      "attributes":{
+          "busNodes": [2, 3]
+      }
+    }, {
+      "asset_id": "645-646",
+      "bus_id": "646",
+      "attributes":{
+          "busNodes": [2, 3]
+      }
+    }, {
+      "asset_id": "rg60-632",
+      "bus_id": "RG60",
+      "attributes":{
+          "busNodes": [1, 2, 3]
+      }
+    }, {
+      "asset_id": "rg60-632",
+      "bus_id": "632",
+      "attributes":{
+          "busNodes": [1, 2, 3]
+      }
+    }, {
+      "asset_id": "684-652",
+      "bus_id": "684",
+      "attributes":{
+          "busNodes": [1]
+      }
+    }, {
+      "asset_id": "684-652",
+      "bus_id": "652",
+      "attributes":{
+          "busNodes": [1]
+      }
+    }, {
+      "asset_id": "632-671",
+      "bus_id": "632",
+      "attributes":{
+          "busNodes": [1, 2, 3]
+      }
+    }, {
+      "asset_id": "632-671",
+      "bus_id": "671",
+      "attributes":{
+          "busNodes": [1, 2, 3]
+      }
+    }, {
+      "asset_id": "671-684",
+      "bus_id": "671",
+      "attributes": {
+          "busNodes": [1, 3]
+      }
+    }, {
+      "asset_id": "671-684",
+      "bus_id": "684",
+      "attributes":{
+          "busNodes": [1, 3]
+      }
+    }, {
+      "asset_id": "671-680",
+      "bus_id": "671",
+      "attributes":{
+          "busNodes": [1, 2, 3]
+      }
+    }, {
+      "asset_id": "671-680",
+      "bus_id": "680",
+      "attributes":{
+          "busNodes": [1, 2, 3]
+      }
+    }, {
+      "asset_id": "684-611",
+      "bus_id": "684",
+      "attributes":{
+          "busNodes": [3]
+      }
+    }, {
+      "asset_id": "684-611",
+      "bus_id": "611",
+      "attributes":{
+          "busNodes": [3]
+      }
+    }, {
+      "asset_id": "692-675",
+      "bus_id": "692",
+      "attributes":{
+          "busNodes": [1, 2, 3]
+      }
+    }, {
+      "asset_id": "692-675",
+      "bus_id": "675",
+      "attributes":{
+          "busNodes": [1, 2, 3]
+      }
+    }, {
+      "asset_id": "671-692",
+      "bus_id": "671",
+      "attributes":{
+          "busNodes": [1, 2, 3]
+      }
+    }, {
+      "asset_id": "671-692",
+      "bus_id": "692",
+      "attributes":{
+          "busNodes": [1, 2, 3]
+      }
+    }
+  ],
+  "line_codes": [
+    {
+    "id": "mtx601",
+    "attributes": {
+      "baseFrequency": 60,
+      "phaseCount": 3,
+      "resistanceMatrix": [
+          [0.3465],
+          [0.1560, 0.3375],
+          [0.1580, 0.1535, 0.3414]
+      ],
+      "resistanceMatrixUnit": "ohms/mi",
+      "reactanceMatrix": [
+          [1.0179],
+          [0.5017, 1.04],
+          [0.4236, 0.3849, 1.0348]
+      ],
+      "reactanceMatrixUnit": "ohms/mi"
+    }
+  }, {
+    "id": "mtx602",
+    "attributes": {
+      "baseFrequency": 60,
+      "phaseCount": 3,
+      "resistanceMatrix": [
+          [0.7526],
+          [0.1580, 0.7475],
+          [0.1560, 0.1535, 0.7436]
+      ],
+      "resistanceMatrixUnit": "ohms/mi",
+      "reactanceMatrix": [
+          [1.1814],
+          [0.4236, 1.1983],
+          [0.5017, 0.3849, 1.2112]
+      ],
+      "reactanceMatrixUnit": "ohms/mi"
+    }
+  }, {
+    "id": "mtx603",
+    "attributes": {
+      "baseFrequency": 60,
+      "phaseCount": 2,
+      "resistanceMatrix": [
+          [1.3294],
+          [0.2066, 1.3238]
+      ],
+      "resistanceMatrixUnit": "ohms/mi",
+      "reactanceMatrix": [
+          [1.3471],
+          [0.4591, 1.3569]
+      ],
+      "reactanceMatrixUnit": "ohms/mi"
+    }
+  }, {
+    "id": "mtx604",
+    "attributes": {
+      "baseFrequency": 60,
+      "phaseCount": 2,
+      "resistanceMatrix": [
+          [1.3238],
+          [0.2066, 1.3294]
+      ],
+      "resistanceMatrixUnit": "ohms/mi",
+      "reactanceMatrix": [
+          [1.3569],
+          [0.4591, 1.3471]
+      ],
+      "reactanceMatrixUnit": "ohms/mi"
+    }
+  }, {
+    "id": "mtx605",
+    "attributes": {
+      "baseFrequency": 60,
+      "phaseCount": 1,
+      "resistanceMatrix": [
+          [1.3292]
+      ],
+      "resistanceMatrixUnit": "ohms/mi",
+      "reactanceMatrix": [
+          [1.3475]
+      ],
+      "reactanceMatrixUnit": "ohms/mi"
+    }
+  }, {
+    "id": "mtx606",
+    "attributes": {
+      "baseFrequency": 60,
+      "phaseCount": 3,
+      "resistanceMatrix": [
+          [0.7982],
+          [0.3192, 0.7891],
+          [0.2849, 0.3192, 0.7982]
+      ],
+      "resistanceMatrixUnit": "ohms/mi",
+      "reactanceMatrix": [
+          [0.4463],
+          [0.0328, 0.4041],
+          [-0.0143, 0.0328, 0.4463]
+      ],
+      "reactanceMatrixUnit": "ohms/mi"
+    }
+  }, {
+    "id": "mtx607",
+    "attributes": {
+      "baseFrequency": 60,
+      "phaseCount": 1,
+      "resistanceMatrix": [
+          [1.3425]
+      ],
+      "resistanceMatrixUnit": "ohms/mi",
+      "reactanceMatrix": [
+          [0.5124]
+      ],
+      "reactanceMatrixUnit": "ohms/mi"
+    }
+  }
+  ]
+}
+

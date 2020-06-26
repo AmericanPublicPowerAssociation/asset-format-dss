@@ -34,14 +34,14 @@ def to_matrix(lists):
 class AssetMixin:
     @property
     def id(self):
-        return self.asset.name
+        return self.asset['name']
 
     @property
     def name(self):
-        return self.asset.name
+        return self.asset['name']
 
     def attributes(self):
-        return self.asset.name
+        return {}
 
 
 class Line(AssetMixin):
@@ -54,25 +54,27 @@ class Line(AssetMixin):
         self.wired = wired
 
     def __str__(self):
-        phases = self.asset.attributes.get('phaseCount')
-        lc = self.asset.attributes.get('lineType')
-        length = self.asset.attributes.get('lineLength')
-        unit = self.asset.attributes.get('lengthUnit')
+        attributes = self.asset['attributes']
+        line_id = self.asset['id']
+        phases = attributes.get('phaseCount')
+        lc = attributes.get('lineType')
+        length = attributes.get('lineLength')
+        unit = attributes.get('lengthUnit')
 
-        line = f'New Line.{self.asset.id} '
+        line = f'New Line.{line_id} '
         line += f'phases={phases} ' if phases else ''
         line += f'linecode={lc} ' if lc else ''
         line += f'length={length} ' if length else ''
         line += f'units={unit}' if unit else ''
 
-        attr = self.wired.attributes
-        bus1 = build_bus(self.bus.id, to_str(attr.get('busNodes') or []))
+        connection_attributes = self.wired['attributes']
+        bus1 = build_bus(self.bus, to_str(connection_attributes.get('busNodes') or []))
         bus2 = None
         if len(self.conn) > 0:
             for conn in self.conn:
-                attr = conn.wired.attributes
-                bus2 = build_bus(conn.bus.id, to_str(
-                    attr.get('busNodes') or []))
+                connection_attributes = conn.wired['attributes']
+                bus2 = build_bus(conn.bus, to_str(
+                    connection_attributes.get('busNodes') or []))
 
         if bus1:
             line += f' Bus1={bus1} '
@@ -93,24 +95,26 @@ class Switch(AssetMixin):
         self.wired = wired
 
     def __str__(self):
-        phases = self.asset.attributes.get('phaseCount')
-        r1 = self.asset.attributes.get('positiveSequenceResistance')
-        r0 = self.asset.attributes.get('zeroSequenceResistance')
-        x1 = self.asset.attributes.get('positiveSequenceReactance')
-        x0 = self.asset.attributes.get('zeroSequenceReactance')
-        c1 = self.asset.attributes.get('positiveSequenceCapacitance')
-        c0 = self.asset.attributes.get('zeroSequenceCapacitance')
+        switch_id = self.asset['id']
+        attributes = self.asset['attributes']
+        phases = attributes.get('phaseCount')
+        r1 = attributes.get('positiveSequenceResistance')
+        r0 = attributes.get('zeroSequenceResistance')
+        x1 = attributes.get('positiveSequenceReactance')
+        x0 = attributes.get('zeroSequenceReactance')
+        c1 = attributes.get('positiveSequenceCapacitance')
+        c0 = attributes.get('zeroSequenceCapacitance')
 
-        line = f'New Line.{self.asset.id} Switch=y phases={phases}'
+        line = f'New Line.{switch_id} Switch=y phases={phases}'
         line += f' r1={r1} r0={r0} x1={x1} x0={x0} c1={c1} c0={c0}'
 
-        attr = self.wired.attributes
-        bus1 = build_bus(self.bus.id, to_str(attr.get('busNodes')))
+        connection_attributes = self.wired['attributes']
+        bus1 = build_bus(self.bus, to_str(connection_attributes.get('busNodes')))
         bus2 = None
         if len(self.conn) > 0:
             for conn in self.conn:
-                attr = conn.wired.attributes
-                bus2 = build_bus(conn.bus.id, to_str(attr.get('busNodes')))
+                connection_attributes = conn.wired['attributes']
+                bus2 = build_bus(conn.bus, to_str(connection_attributes.get('busNodes')))
 
         if bus1:
             line += f' Bus1={bus1} '
@@ -131,25 +135,27 @@ class Meter(AssetMixin):
         self.wired = wired
 
     def __str__(self):
-        phases = self.asset.attributes.get('phaseCount')
-        model = self.asset.attributes.get('loadModel')
+        load_id = self.asset['id']
+        attributes = self.asset['attributes']
+        phases = attributes.get('phaseCount')
+        model = attributes.get('loadModel')
 
-        attr = self.wired.attributes
-        bus1 = build_bus(self.bus.id, to_str(attr.get('busNodes') or []))
+        connection_attributes = self.wired['attributes']
+        bus1 = build_bus(self.bus, to_str(connection_attributes.get('busNodes') or []))
 
-        kV = attr.get('baseVoltage')
-        conn = attr.get('connectionType')
-        kW = attr.get('activePower')
-        kvar = attr.get('reactivePower')
+        kv = connection_attributes.get('baseVoltage')
+        conn = connection_attributes.get('connectionType')
+        kw = connection_attributes.get('activePower')
+        kvar = connection_attributes.get('reactivePower')
 
-        command = f'New Load.Load_{self.asset.id} '
+        command = f'New Load.Load_{load_id} '
         command += f'phases={phases} ' if phases else ''
         command += f'conn={conn} ' if conn else ''
         command += f'model={model} ' if model else ''
         command += f' Bus1={bus1} ' if bus1 else ''
-        command += f'kV={kV} ' if kV else ''
-        command += f'kW={kW} ' if kW else ''
-        command += f'kvar={kvar}' if kV else ''
+        command += f'kV={kv} ' if kv else ''
+        command += f'kW={kw} ' if kw else ''
+        command += f'kvar={kvar}' if kvar else ''
 
         return command
 
@@ -164,34 +170,36 @@ class Regulator(AssetMixin):
         self.wired = wired
 
     def __str__(self):
-        xhl = self.asset.attributes.get('percentLoadLoss')
-        vreg = self.asset.attributes.get('regulatedVoltage')
-        band = self.asset.attributes.get('bandwidthVoltage')
-        ptratio = self.asset.attributes.get('potentialTransformerRatio')
-        ctprim = self.asset.attributes.get('currentTransformerRating')
-        R = self.asset.attributes.get('rSettingVoltage')
-        X = self.asset.attributes.get('xSettingVoltage')
-        phases = self.asset.attributes.get('phaseCount')
-        winding = self.asset.attributes.get('windingCount')
+        regulator_id = self.asset['id']
+        attributes = self.asset['attributes']
+        xhl = attributes.get('percentLoadLoss')
+        vreg = attributes.get('regulatedVoltage')
+        band = attributes.get('bandwidthVoltage')
+        ptratio = attributes.get('potentialTransformerRatio')
+        ctprim = attributes.get('currentTransformerRating')
+        r = attributes.get('rSettingVoltage')
+        x = attributes.get('xSettingVoltage')
+        phases = attributes.get('phaseCount')
+        winding = attributes.get('windingCount')
 
-        attr = self.wired.attributes
-        kVs = [attr.get('baseVoltage')]
-        kVAs = [attr.get('power')]
-        buses = [build_bus(self.bus.id, to_str(attr.get('busNodes')))]
+        connection_attributes = self.wired['attributes']
+        kvs = [connection_attributes.get('baseVoltage')]
+        kvas = [connection_attributes.get('power')]
+        buses = [build_bus(self.bus, to_str(connection_attributes.get('busNodes')))]
 
         for conn in self.conn:
-            attr = conn.wired.attributes
-            kVs.append(attr.get('baseVoltage'))
-            kVAs.append(attr.get('power'))
-            buses.append(build_bus(conn.bus.id, to_str(attr.get('busNodes'))))
+            connection_attributes = conn.wired['attributes']
+            kvs.append(connection_attributes.get('baseVoltage'))
+            kvas.append(connection_attributes.get('power'))
+            buses.append(build_bus(conn.bus, to_str(connection_attributes.get('busNodes'))))
 
-        command = f'New Transformer.{self.asset.id} phases={phases} bank=reg1'
-        command += f' buses={to_dss_array(to_str(buses))} kVs={to_dss_array(to_str(kVs))}'
-        command += f' kVAs={to_dss_array(to_str(kVAs))} xhl={xhl} %LoadLoss={xhl}\n'
+        command = f'New Transformer.{regulator_id} phases={phases} bank=reg1'
+        command += f' buses={to_dss_array(to_str(buses))} kVs={to_dss_array(to_str(kvs))}'
+        command += f' kVAs={to_dss_array(to_str(kvas))} xhl={xhl} %LoadLoss={xhl}\n'
 
-        command +=  f'New regcontrol.{self.asset.id} transformer={self.asset.id} '
+        command += f'New regcontrol.{regulator_id} transformer={regulator_id} '
         command += f' winding={winding} vreg={vreg} band={band} ptratio={ptratio} ctprim={ctprim}'
-        command += f' R={R} X={X}'
+        command += f' R={r} X={x}'
 
         return command
 
@@ -206,15 +214,15 @@ class Capacitor(AssetMixin):
         self.wired = wired
 
     def __str__(self):
-        phases = self.asset.attributes.get('phaseCount')
+        capacitor_id = self.asset['id']
+        phases = self.asset['attributes'].get('phaseCount')
+        connection_attributes = self.wired['attributes']
+        bus1 = build_bus(self.bus, to_str(connection_attributes.get('busNodes')))
+        kv = connection_attributes.get('baseVoltage')
+        conn = connection_attributes.get('connectionType', None)
+        kvar = connection_attributes.get('reactivePower')
 
-        attr = self.wired.attributes
-        bus1 = build_bus(self.bus.id, to_str(attr.get('busNodes')))
-        kV = attr.get('baseVoltage')
-        conn = attr.get('connectionType', None)
-        kvar = attr.get('reactivePower')
-
-        command = f'new capacitor.{self.asset.id} phases={phases} bus1={bus1} kVAr={kvar} kV={kV} '
+        command = f'new capacitor.{capacitor_id} phases={phases} bus1={bus1} kVAr={kvar} kV={kv} '
 
         if conn:
             command += f' conn={conn}'
@@ -232,7 +240,8 @@ class PowerQuality(AssetMixin):
         self.wired = wired
 
     def __str__(self):
-        command = f'// Power Quality still not supported {self.asset.id}'
+        power_id = self.asset['id']
+        command = f'// Power Quality still not supported {power_id}'
 
         return command
 
@@ -247,12 +256,14 @@ class Transformer(AssetMixin):
         self.wired = wired
 
     def __str__(self):
-        phases = self.asset.attributes.get('phaseCount')
-        winding = self.asset.attributes.get('windingCount')
-        xhl = self.asset.attributes.get('winding1Winding2PercentReactance', None)
-        xht = self.asset.attributes.get('winding1Winding3PercentReactance', None)
-        xlt = self.asset.attributes.get('winding2Winding3PercentReactance', None)
-        command = f'New Transformer.{self.asset.id} Phases={phases} Windings={winding}'
+        transformer_id = self.asset['id']
+        attributes = self.asset['attributes']
+        phases = attributes.get('phaseCount')
+        winding = attributes.get('windingCount')
+        xhl = attributes.get('winding1Winding2PercentReactance', None)
+        xht = attributes.get('winding1Winding3PercentReactance', None)
+        xlt = attributes.get('winding2Winding3PercentReactance', None)
+        command = f'New Transformer.{transformer_id} Phases={phases} Windings={winding}'
 
         if xhl:
             command += f' xhl={xhl}'
@@ -261,25 +272,25 @@ class Transformer(AssetMixin):
         if xlt:
             command += f' xlt={xlt}'
 
-        attr = self.wired.attributes
-        conns = [attr.get('connectionType')]
-        kVs = [attr.get('baseVoltage')]
-        kVAs = [attr.get('power')]
-        Rs = [attr.get('powerPercentResistance')]
-        buses = [self.bus.id]
+        connection_attributes = self.wired['attributes']
+        conns = [connection_attributes.get('connectionType')]
+        kvs = [connection_attributes.get('baseVoltage')]
+        kvas = [connection_attributes.get('power')]
+        rs = [connection_attributes.get('powerPercentResistance')]
+        buses = [self.bus]
         for conn in self.conn:
-            attr = conn.wired.attributes
-            conns.append(attr.get('connectionType'))
-            kVs.append(attr.get('baseVoltage'))
-            kVAs.append(attr.get('power'))
-            Rs.append(attr.get('powerPercentResistance'))
-            buses.append(conn.bus.id)
+            connection_attributes = conn.wired['attributes']
+            conns.append(connection_attributes.get('connectionType'))
+            kvs.append(connection_attributes.get('baseVoltage'))
+            kvas.append(connection_attributes.get('power'))
+            rs.append(connection_attributes.get('powerPercentResistance'))
+            buses.append(conn.bus)
 
         command += f' buses={to_dss_array(to_str(buses))} ' \
                    f'conns={to_dss_array(to_str(conns))}'
-        command += f' kVs={to_dss_array(to_str(kVs))} ' \
-                   f'kvas={to_dss_array(to_str(kVAs))}'
-        command += f' %Rs={to_dss_array(to_str(Rs))}'
+        command += f' kVs={to_dss_array(to_str(kvs))} ' \
+                   f'kvas={to_dss_array(to_str(kvas))}'
+        command += f' %Rs={to_dss_array(to_str(rs))}'
 
         return command
 
@@ -294,7 +305,8 @@ class Generator(AssetMixin):
         self.wired = wired
 
     def __str__(self):
-        command = f'New Generator.{self.asset.id}'
+        generator_id = self.asset['id']
+        command = f'New Generator.{generator_id}'
         return command
 
 
@@ -308,17 +320,18 @@ class Circuit(AssetMixin):
         self.wired = wired
 
     def __str__(self):
-        frequency = self.asset.attributes.get('baseFrequency')
-        kV = self.asset.attributes.get('baseVoltage')
-        pu = self.asset.attributes.get('perUnitVoltage')
-        phases = self.asset.attributes.get('phaseCount')
-        angle = self.asset.attributes.get('phaseAngle')
-        Isc3 = self.asset.attributes.get('shortCircuit3PhasePower')
-        Isc1 = self.asset.attributes.get('shortCircuit1PhasePower')
+        attributes = self.asset['attributes']
+        frequency = attributes.get('baseFrequency')
+        kv = attributes.get('baseVoltage')
+        pu = attributes.get('perUnitVoltage')
+        phases = attributes.get('phaseCount')
+        angle = attributes.get('phaseAngle')
+        isc3 = attributes.get('shortCircuit3PhasePower')
+        isc1 = attributes.get('shortCircuit1PhasePower')
 
         command = f'set defaultbasefrequency={frequency}\n'
-        command += f'Edit Vsource.Source bus1={self.bus.id} BasekV={kV} pu={pu} angle={angle}'
-        command += f' frequency={frequency} phases={phases} Isc3={Isc3} Isc1={Isc1}'
+        command += f'Edit Vsource.Source bus1={self.bus} BasekV={kv} pu={pu} angle={angle}'
+        command += f' frequency={frequency} phases={phases} Isc3={isc3} Isc1={isc1}'
 
         return command
 
@@ -330,12 +343,14 @@ class LineCode(AssetMixin):
         self.linetype = linetype
 
     def __str__(self):
-        rmatrix = to_matrix(self.linetype.attributes.get('resistanceMatrix'))
-        xmatrix = to_matrix(self.linetype.attributes.get('reactanceMatrix'))
-        frequency = self.linetype.attributes.get('baseFrequency')
-        phases = self.linetype.attributes.get('phaseCount')
-        unit = self.linetype.attributes.get('resistanceMatrixUnit').split('/')[1]
-        return (f'New Linecode.{self.linetype.id} nphases={phases} BaseFreq={frequency} units={unit}\n' 
+        line_type_id = self.linetype["id"]
+        attributes = self.linetype['attributes']
+        rmatrix = to_matrix(attributes.get('resistanceMatrix'))
+        xmatrix = to_matrix(attributes.get('reactanceMatrix'))
+        frequency = attributes.get('baseFrequency')
+        phases = attributes.get('phaseCount')
+        unit = attributes.get('resistanceMatrixUnit').split('/')[1]
+        return (f'New Linecode.{line_type_id} nphases={phases} BaseFreq={frequency} units={unit}\n' 
                 f'~ rmatrix={rmatrix} \n'
                 f'~ xmatrix={xmatrix}')
 
@@ -344,33 +359,46 @@ ASSET = (Line, Switch, Meter, Regulator, Capacitor, Transformer, Generator, Powe
 Conn = namedtuple("Conn", ["bus", "element", 'asset', 'wired'])
 
 
-def generate_dss_script(db, root='voltageSource', allowed_assets=ASSET):
-    buses = {}
-    normalized_assets, normalized_conn = normalize_assets_and_connections(db)
+def generate_dss_script(assets, connections, buses, line_types, root='voltageSource', allowed_assets=ASSET):
+    active_buses = {}
 
-    for conn in normalized_conn:
-        if conn.asset_id not in buses.keys():
+    for conn in connections:
+        if conn['asset_id'] not in active_buses.keys():
             current = []
         else:
-            current = buses[conn.asset_id]
+            current = active_buses[conn['asset_id']]
 
-        element = normalized_assets.get(conn.asset_id)
+        element = get_asset_by_id(conn['asset_id'], assets)
         if not element:
             continue
 
-        bus = db.query(Bus).filter(Bus.id == conn.bus_id).one()
+        bus = get_bus(conn['bus_id'], buses)
         asset_type = get_asset_type(element, allowed_assets, root)
 
         current.append(Conn(bus, element, asset_type, conn))
-        buses[conn.asset_id] = current
+        active_buses[conn['asset_id']] = current
 
-    assets_by_type = group_assets_by_type(db, buses, root)
+    assets_by_type = group_assets_by_type(active_buses, root, line_types)
     stations = assets_by_type[0]['assets']
     circuit = build_circuit(assets_by_type, get_circuit_head(), get_circuit_tail(), warning=len(stations) == 0)
     return circuit
 
 
-def group_assets_by_type(db, buses, root):
+def line_types_to_json(line_types):
+    return [{
+        'id': line_type.id,
+        'attributes': line_type.attributes
+    } for line_type in line_types]
+
+
+def get_bus(bus_id, buses):
+    exists_bus = list(filter(lambda current_bus: bus_id == current_bus, buses))
+
+    if len(exists_bus):
+        return exists_bus[0]
+
+
+def group_assets_by_type(buses, root, line_types):
     stations = []
     # substation = []
     # linecodes = []
@@ -382,7 +410,7 @@ def group_assets_by_type(db, buses, root):
     generators = []
     lcs = []
 
-    ELEMENTS = (
+    grouped_elements = (
         {'title': 'Station', 'assets': stations},
         {'title': 'Generators', 'assets': generators},
         {'title': 'Transformers', 'assets': transformers},
@@ -394,15 +422,18 @@ def group_assets_by_type(db, buses, root):
         {'title': 'Regulator', 'assets': regulators},
     )
 
-    for conn in db.query(LineType):
-        lcs.append(LineCode(conn))
+    for line_type in line_types:
+        lcs.append(LineCode(line_type))
 
     for bus_id, connections in buses.items():
         conns = connections[1:]
         conn = connections[0]
+        if conn.asset is None:
+            continue
+
         asset = conn.asset(conn.element, conn.bus, conns, conn.wired)
 
-        if conn.element.id == root:
+        if conn.element['id'] == root:
             stations.append(asset)
         if conn.asset == Line:
             lines.append(asset)
@@ -419,16 +450,16 @@ def group_assets_by_type(db, buses, root):
         if conn.asset == Generator:
             generators.append(asset)
 
-    return ELEMENTS
+    return grouped_elements
 
 
 def get_asset_type(asset, allowed_assets=list(), root=None):
     asset_type = None
-    if asset.id == root:
+    if asset.get('id') == root:
         asset_type = Circuit
     else:
         for AssetClass in allowed_assets:
-            if asset.type_code == AssetClass.type:
+            if asset['type_code'] == AssetClass.type:
                 asset_type = AssetClass
 
     return asset_type
@@ -472,53 +503,69 @@ def build_circuit(assets, head='', tail='', warning=False):
     return circuit
 
 
-def clone_asset(asset, index=None):
-    new_asset = Asset(type_code=asset.type_code, name=asset.name)
-    if index is not None:
-        new_asset.name = f'{asset.id}_{index}'
-        new_asset.id = f'{asset.id}_{index}'
+def asset_to_json(asset, index=None):
+    new_asset = {
+        'id': asset.id,
+        'type_code': asset.type_code,
+        'name': asset.name,
+        'attributes':  asset.attributes
+    }
 
-    new_asset.attributes = asset.attributes
+    if index is not None:
+        new_asset['name'] = f'{asset.id}_{index}'
+        new_asset['id'] = f'{asset.id}_{index}'
 
     return new_asset
 
 
-def clone_connection(connection, asset_id=None, vertex=None):
-    new_connection = Connection(bus_id=connection.bus_id, asset_id=connection.asset_id,
-                                asset_vertex_index=connection.asset_vertex_index)
-    if asset_id:
-        new_connection.asset_id = asset_id
-    if vertex:
-        new_connection.asset_vertex_index = vertex
+def connection_to_json(connection, asset_id=None, vertex=None):
+    new_connection = {
+        'bus_id': connection.bus_id,
+        'asset_id': connection.asset_id,
+        'asset_vertex_index': connection.asset_vertex_index,
+        'attributes': connection.attributes
+    }
 
-    new_connection.attributes = connection.attributes
+    if asset_id:
+        new_connection['asset_id'] = asset_id
+    if vertex:
+        new_connection['asset_vertex_index'] = vertex
 
     return new_connection
 
 
-def normalize_assets_and_connections(db):
+def filter_connection_by_asset(asset_id, connections):
+    return filter(lambda connection: connection.asset_id == asset_id, connections)
+
+
+def get_asset_by_id(asset_id, assets):
+    print(assets)
+    for asset in filter(lambda asset: asset['id'] == asset_id, assets):
+        return asset
+
+
+def normalize_assets_and_connections(assets, connections):
     flat_connections = []
     flat_assets = {}
 
-    for asset in db.query(Asset).filter(Asset.is_deleted == False):
-        connections = db.query(Connection).filter(Connection.asset_id == asset.id)
-        poll_connections = [connection for connection in connections]
+    for asset in assets:
+        pool_connections = list(filter_connection_by_asset(asset.id, connections))
 
-        if asset.type_code == AssetTypeCode.LINE and len(poll_connections) > 2:
-            for i in range(0, len(poll_connections) - 1):
+        if asset.type_code == AssetTypeCode.LINE and len(pool_connections) > 2:
+            for i in range(0, len(pool_connections) - 1):
                 if not flat_assets.get(f'{asset.id}_{i}'):
-                    flat_assets[f'{asset.id}_{i}'] = clone_asset(asset, i)
+                    flat_assets[f'{asset.id}_{i}'] = asset_to_json(asset, i)
 
-                temp_connection_0 = clone_connection(poll_connections[i], asset_id=f'{asset.id}_{i}', vertex=0)
-                temp_connection_1 = clone_connection(poll_connections[i+1], asset_id=f'{asset.id}_{i}', vertex=1)
+                temp_connection_0 = connection_to_json(pool_connections[i], asset_id=f'{asset.id}_{i}', vertex=0)
+                temp_connection_1 = connection_to_json(pool_connections[i+1], asset_id=f'{asset.id}_{i}', vertex=1)
 
                 flat_connections.append(temp_connection_0)
                 flat_connections.append(temp_connection_1)
         else:
             if not flat_assets.get(asset.id):
-                flat_assets[asset.id] = asset
+                flat_assets[asset.id] = asset_to_json(asset)
 
-            for conn in poll_connections:
-                flat_connections.append(conn)
+            for conn in pool_connections:
+                flat_connections.append(connection_to_json(conn))
 
-    return flat_assets, flat_connections
+    return flat_assets.values(), flat_connections
