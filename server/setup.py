@@ -10,6 +10,8 @@ APP_CLASSIFIERS = [
 APP_REQUIREMENTS = [
 ]
 TEST_REQUIREMENTS = [
+    'pytest',
+    'pytest-cov',
 ]
 FOLDER = dirname(abspath(__file__))
 DESCRIPTION = '\n\n'.join(open(join(FOLDER, x)).read().strip() for x in [
