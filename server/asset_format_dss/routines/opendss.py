@@ -625,17 +625,9 @@ def remove_temporal_line_connections(temp_assets, temp_connections):
     for subgraph in nx.connected_components(G):
         bus_id = '_'.join(sorted(subgraph))
         subgraphs[bus_id] = subgraph
-        #print(subgraph)
-
-        # for bus in subgraph:
-        #    bus_connections = filter_connection_by_bus(bus, connections)
-        #    for connection in bus_connections:
-        #        print(f'Conn({connection.asset_id}, {connection.bus_id}) => Conn({connection.asset_id}, {single_bus.id}) ')
-        #        connection.bus_id = single_bus.id
 
     assets_ids = [asset['id'] for asset in assets]
     for connection in temp_connections:
-        #print(connection.bus_id)
         if connection.asset_id in assets_ids:
             temporal_connection = {
                 'asset_id': connection.asset_id,
@@ -650,8 +642,5 @@ def remove_temporal_line_connections(temp_assets, temp_connections):
 
             connections.append(temporal_connection)
 
-    #print(assets)
-    #for conn in connections:
-    #    print(conn)
 
     return assets, connections
