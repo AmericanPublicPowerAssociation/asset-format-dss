@@ -21,9 +21,13 @@ POWERQUALITY_REGULATOR = AssetTypeCode.REGULATOR
 
 
 to_dss_array = lambda l:  f'[ {" ".join(l)} ]'
-build_bus = lambda bus, nodes:  f'{bus}.{".".join(nodes)}' if nodes else f'{bus}'
 to_str = lambda l: [str(e) for e in l if e]
 comment = lambda text: f'// {text}'
+
+def build_bus(bus, nodes):
+    group_nodes = list(filter(lambda val: val != '.', nodes))
+    print(group_nodes)
+    return f'{bus}.{".".join(group_nodes)}' if len(group_nodes) != 0 else f'{bus}'
 
 def to_matrix(lists):
     rows = [' '.join(map(str, entry)) for entry in lists]
@@ -185,13 +189,13 @@ class Regulator(AssetMixin):
         connection_attributes = self.wired['attributes']
         kvs = [connection_attributes.get('baseVoltage')]
         kvas = [connection_attributes.get('power')]
-        buses = [build_bus(self.bus, to_str(connection_attributes.get('busNodes')))]
+        buses = [build_bus(self.bus, to_str(connection_attributes.get('busNodes') or []))]
 
         for conn in self.conn:
             connection_attributes = conn.wired['attributes']
             kvs.append(connection_attributes.get('baseVoltage'))
             kvas.append(connection_attributes.get('power'))
-            buses.append(build_bus(conn.bus, to_str(connection_attributes.get('busNodes'))))
+            buses.append(build_bus(conn.bus, to_str(connection_attributes.get('busNodes') or [])))
 
         command = f'New Transformer.{regulator_id} phases={phases} bank=reg1'
         command += f' buses={to_dss_array(to_str(buses))} kVs={to_dss_array(to_str(kvs))}'
@@ -217,7 +221,7 @@ class Capacitor(AssetMixin):
         capacitor_id = self.asset['id']
         phases = self.asset['attributes'].get('phaseCount')
         connection_attributes = self.wired['attributes']
-        bus1 = build_bus(self.bus, to_str(connection_attributes.get('busNodes')))
+        bus1 = build_bus(self.bus, to_str(connection_attributes.get('busNodes') or []))
         kv = connection_attributes.get('baseVoltage')
         conn = connection_attributes.get('connectionType', None)
         kvar = connection_attributes.get('reactivePower')
@@ -457,6 +461,10 @@ def get_asset_type(asset, allowed_assets=list(), root=None):
     asset_type = None
     if asset.get('id') == root:
         asset_type = Circuit
+    elif asset['attributes'] and asset['attributes'].get('qualityType') == 'regulator':
+        asset_type = Regulator
+    elif asset['attributes'] and asset['attributes'].get('qualityType') == 'capacitor':
+        asset_type = Capacitor
     else:
         for AssetClass in allowed_assets:
             if asset['type_code'] == AssetClass.type:
@@ -643,6 +651,7 @@ def remove_temporal_line_connections(temp_assets, temp_connections):
             connections.append(temporal_connection)
 
     #print(assets)
-    #print(connections)
+    #for conn in connections:
+    #    print(conn)
 
     return assets, connections

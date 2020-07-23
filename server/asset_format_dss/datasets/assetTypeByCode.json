@@ -5,6 +5,9 @@
       ["lineType", "lineType"],
       ["lineLength", "number"],
       ["lengthUnit", ["ft", "mi", "m", "km"]]
+    ],
+    "connectionAttributes": [
+      ["busNodes", ["1", "2", "3", "1.2", "1.3", "2.3", "1.2.3", "3.1"]]
     ]
   },
   "m": {
@@ -19,7 +22,8 @@
       ["activePower", "number"],
       ["activePowerUnit", ["kW"]],
       ["reactivePower", "number"],
-      ["reactivePowerUnit", ["kVAR"]]
+      ["reactivePowerUnit", ["kVAR"]],
+      ["busNodes", ["1", "2", "3", "1.2", "1.3", "2.3", "1.2.3", "3.1"]]
     ]
   },
   "t": {
@@ -52,6 +56,9 @@
       ["positiveSequenceCapacitanceUnit", ["nF/mi"]],
       ["zeroSequenceCapacitance", "number"],
       ["zeroSequenceCapacitanceUnit", ["nF/mi"]]
+    ],
+    "connectionAttributes": [
+      ["busNodes", ["1", "2", "3", "1.2", "1.3", "2.3", "1.2.3", "3.1"]]
     ]
   },
   "q": {
@@ -76,7 +83,8 @@
       ["baseVoltage", "number"],
       ["baseVoltageUnit", ["kV"]],
       ["power", "number"],
-      ["powerUnit", ["kVA"]]
+      ["powerUnit", ["kVA"]],
+      ["busNodes", ["1", "2", "3", "1.2", "1.3", "2.3", "1.2.3"]]
     ]
   },
   "g": {
