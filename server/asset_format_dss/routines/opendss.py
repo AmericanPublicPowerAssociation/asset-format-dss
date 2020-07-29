@@ -2,7 +2,7 @@ from collections import namedtuple
 
 from asset_tracker.models.asset import (
     Asset, Bus, Connection, LineType, AssetTypeCode)
-
+import networkx as nx
 
 TRANSFORMER = AssetTypeCode.TRANSFORMER
 METER = AssetTypeCode.METER
@@ -21,9 +21,13 @@ POWERQUALITY_REGULATOR = AssetTypeCode.REGULATOR
 
 
 to_dss_array = lambda l:  f'[ {" ".join(l)} ]'
-build_bus = lambda bus, nodes:  f'{bus}.{".".join(nodes)}' if nodes else f'{bus}'
 to_str = lambda l: [str(e) for e in l if e]
 comment = lambda text: f'// {text}'
+
+def build_bus(bus, nodes):
+    group_nodes = list(filter(lambda val: val != '.', nodes))
+    print(group_nodes)
+    return f'{bus}.{".".join(group_nodes)}' if len(group_nodes) != 0 else f'{bus}'
 
 def to_matrix(lists):
     rows = [' '.join(map(str, entry)) for entry in lists]
@@ -185,13 +189,13 @@ class Regulator(AssetMixin):
         connection_attributes = self.wired['attributes']
         kvs = [connection_attributes.get('baseVoltage')]
         kvas = [connection_attributes.get('power')]
-        buses = [build_bus(self.bus, to_str(connection_attributes.get('busNodes')))]
+        buses = [build_bus(self.bus, to_str(connection_attributes.get('busNodes') or []))]
 
         for conn in self.conn:
             connection_attributes = conn.wired['attributes']
             kvs.append(connection_attributes.get('baseVoltage'))
             kvas.append(connection_attributes.get('power'))
-            buses.append(build_bus(conn.bus, to_str(connection_attributes.get('busNodes'))))
+            buses.append(build_bus(conn.bus, to_str(connection_attributes.get('busNodes') or [])))
 
         command = f'New Transformer.{regulator_id} phases={phases} bank=reg1'
         command += f' buses={to_dss_array(to_str(buses))} kVs={to_dss_array(to_str(kvs))}'
@@ -217,7 +221,7 @@ class Capacitor(AssetMixin):
         capacitor_id = self.asset['id']
         phases = self.asset['attributes'].get('phaseCount')
         connection_attributes = self.wired['attributes']
-        bus1 = build_bus(self.bus, to_str(connection_attributes.get('busNodes')))
+        bus1 = build_bus(self.bus, to_str(connection_attributes.get('busNodes') or []))
         kv = connection_attributes.get('baseVoltage')
         conn = connection_attributes.get('connectionType', None)
         kvar = connection_attributes.get('reactivePower')
@@ -457,13 +461,14 @@ def get_asset_type(asset, allowed_assets=list(), root=None):
     asset_type = None
     if asset.get('id') == root:
         asset_type = Circuit
+    elif asset['attributes'] and asset['attributes'].get('qualityType') == 'regulator':
+        asset_type = Regulator
+    elif asset['attributes'] and asset['attributes'].get('qualityType') == 'capacitor':
+        asset_type = Capacitor
     else:
         for AssetClass in allowed_assets:
             if asset['type_code'] == AssetClass.type:
                 asset_type = AssetClass
-
-    if not asset_type:
-        print(asset['type_code'])
 
     return asset_type
 
@@ -507,26 +512,27 @@ def build_circuit(assets, head='', tail='', warning=False):
 
 
 def asset_to_json(asset, index=None):
+    asset_id = asset['id']
     new_asset = {
-        'id': asset.id,
-        'type_code': asset.type_code,
-        'name': asset.name,
-        'attributes':  asset.attributes
+        'id': asset_id,
+        'type_code': asset['type_code'],
+        'name': asset['name'],
+        'attributes':  asset['attributes']
     }
 
     if index is not None:
-        new_asset['name'] = f'{asset.id}_{index}'
-        new_asset['id'] = f'{asset.id}_{index}'
+        new_asset['name'] = f'{asset_id}_{index}'
+        new_asset['id'] = f'{asset_id}_{index}'
 
     return new_asset
 
 
 def connection_to_json(connection, asset_id=None, vertex=None):
     new_connection = {
-        'bus_id': connection.bus_id,
-        'asset_id': connection.asset_id,
-        'asset_vertex_index': connection.asset_vertex_index,
-        'attributes': connection.attributes
+        'bus_id': connection['bus_id'],
+        'asset_id': connection['asset_id'],
+        'asset_vertex_index': connection['asset_vertex_index'],
+        'attributes': connection['attributes']
     }
 
     if asset_id:
@@ -537,12 +543,19 @@ def connection_to_json(connection, asset_id=None, vertex=None):
     return new_connection
 
 
+def filter_connection_by_bus(bus_id, connections):
+    return filter(lambda connection: connection.bus_id == bus_id, connections)
+
+
 def filter_connection_by_asset(asset_id, connections):
+    return filter(lambda connection: connection['asset_id'] == asset_id, connections)
+
+
+def filter_connection_by_asset_obj(asset_id, connections):
     return filter(lambda connection: connection.asset_id == asset_id, connections)
 
 
 def get_asset_by_id(asset_id, assets):
-    print(assets)
     for asset in filter(lambda asset: asset['id'] == asset_id, assets):
         return asset
 
@@ -552,23 +565,82 @@ def normalize_assets_and_connections(assets, connections):
     flat_assets = {}
 
     for asset in assets:
-        pool_connections = list(filter_connection_by_asset(asset.id, connections))
+        pool_connections = list(filter_connection_by_asset(asset['id'], connections))
+        asset_id = asset['id']
 
-        if asset.type_code == AssetTypeCode.LINE and len(pool_connections) > 2:
+        if asset['type_code'] == AssetTypeCode.LINE and len(pool_connections) > 2:
             for i in range(0, len(pool_connections) - 1):
-                if not flat_assets.get(f'{asset.id}_{i}'):
-                    flat_assets[f'{asset.id}_{i}'] = asset_to_json(asset, i)
+                if not flat_assets.get(f'{asset_id}_{i}'):
+                    flat_assets[f'{asset_id}_{i}'] = asset_to_json(asset, i)
 
-                temp_connection_0 = connection_to_json(pool_connections[i], asset_id=f'{asset.id}_{i}', vertex=0)
-                temp_connection_1 = connection_to_json(pool_connections[i+1], asset_id=f'{asset.id}_{i}', vertex=1)
+                temp_connection_0 = connection_to_json(pool_connections[i], asset_id=f'{asset_id}_{i}', vertex=0)
+                temp_connection_1 = connection_to_json(pool_connections[i+1], asset_id=f'{asset_id}_{i}', vertex=1)
 
                 flat_connections.append(temp_connection_0)
                 flat_connections.append(temp_connection_1)
         else:
-            if not flat_assets.get(asset.id):
-                flat_assets[asset.id] = asset_to_json(asset)
+            if not flat_assets.get(asset_id):
+                flat_assets[asset_id] = asset_to_json(asset)
 
             for conn in pool_connections:
                 flat_connections.append(connection_to_json(conn))
 
     return flat_assets.values(), flat_connections
+
+
+def make_pairs(pool):
+    groups = []
+    pool_length = len(pool)
+
+    if pool_length == 2:
+        groups.append((pool[0], pool[1]))
+    else:
+        for index in range(0, pool_length - 1):
+            groups.append((pool[index], pool[index+1]))
+
+    return groups
+
+
+def remove_temporal_line_connections(temp_assets, temp_connections):
+    connections = []
+    assets = []
+    subgraphs = {}
+    G = nx.Graph()
+
+    for asset in temp_assets:
+        pool_connections = list(filter_connection_by_asset_obj(asset.id, temp_connections))
+        buses = [connection.bus_id for connection in pool_connections]
+        if asset.type_code == AssetTypeCode.LINE and (not asset.attributes or asset.attributes.get('lineType', '') == ''):
+            G.add_nodes_from(buses)
+            for pair in make_pairs(buses):
+                G.add_edge(*pair)
+        else:
+            assets.append({
+                'id': asset.id,
+                'type_code': asset.type_code,
+                'name': asset.name,
+                'attributes': asset.attributes
+            })
+
+    for subgraph in nx.connected_components(G):
+        bus_id = '_'.join(sorted(subgraph))
+        subgraphs[bus_id] = subgraph
+
+    assets_ids = [asset['id'] for asset in assets]
+    for connection in temp_connections:
+        if connection.asset_id in assets_ids:
+            temporal_connection = {
+                'asset_id': connection.asset_id,
+                'asset_vertex_index': connection.asset_vertex_index,
+                'bus_id': connection.bus_id,
+                'attributes': connection.attributes
+            }
+
+            for key, buses in subgraphs.items():
+                if connection.bus_id in buses:
+                    temporal_connection['bus_id'] = key
+
+            connections.append(temporal_connection)
+
+
+    return assets, connections
