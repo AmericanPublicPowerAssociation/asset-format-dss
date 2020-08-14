@@ -1,7 +1,6 @@
 from collections import namedtuple
 
-from asset_tracker.models.asset import (
-    Asset, Bus, Connection, LineType, AssetTypeCode)
+from asset_tracker.models.asset import AssetTypeCode
 import networkx as nx
 
 TRANSFORMER = AssetTypeCode.TRANSFORMER
@@ -24,10 +23,12 @@ to_dss_array = lambda l:  f'[ {" ".join(l)} ]'
 to_str = lambda l: [str(e) for e in l if e]
 comment = lambda text: f'// {text}'
 
+
 def build_bus(bus, nodes):
     group_nodes = list(filter(lambda val: val != '.', nodes))
     print(group_nodes)
     return f'{bus}.{".".join(group_nodes)}' if len(group_nodes) != 0 else f'{bus}'
+
 
 def to_matrix(lists):
     rows = [' '.join(map(str, entry)) for entry in lists]
@@ -641,6 +642,5 @@ def remove_temporal_line_connections(temp_assets, temp_connections):
                     temporal_connection['bus_id'] = key
 
             connections.append(temporal_connection)
-
 
     return assets, connections
